@@ -42,10 +42,10 @@ function validate_usr(&$err,$username){
                 if ($stmt->num_rows == 0){
 					$ok = true;
 				}else{
-                    $err = "Questo username è già in uso."; 
+                    $err = "Questo username Ã¨ giÃ  in uso."; 
                 } 
             }else{
-				$err = "Errore non definito. Riprovare più tardi.";
+				$err = "Errore non definito. Riprovare piÃ¹ tardi.";
             }
 			$stmt->close();
         }
@@ -116,6 +116,40 @@ function insert_user($username,$password){
 		$stmt->close();
    }
    return $ok;
+}
+
+function getAllUsers(){
+    global $conn;
+    $rows = [];
+    
+    $sql = "SELECT username FROM users";
+    $result = $conn -> query($sql);
+    if ($result -> num_rows > 0) {
+        while ($row = $result -> fetch_array(MYSQLI_ASSOC)){
+            array_push($rows,$row);
+        }
+    }
+    $result -> free_result();
+    return $rows;
+}
+
+function getOneUser($username){
+    global $conn;
+	$row = [];
+    $sql = "SELECT id, username, created_at FROM users WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    if($stmt){
+		$stmt->bind_param("s", $param_username);
+		$param_username = $username; 
+		$stmt->execute();
+		$result = $stmt->get_result(); 
+	    if(!empty($result)){ 
+			$row = $result->fetch_assoc();
+		}
+		$stmt->close();
+	}
+	
+    return $row;
 }
 
 ?>
